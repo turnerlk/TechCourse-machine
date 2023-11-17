@@ -1,0 +1,70 @@
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Document</title>
+</head>
+<body class="bg-gray-50">
+    
+    <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8 mt-14">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <img class="mx-auto h-16 w-auto" src="{% static 'images/logo.png' %}" alt="Your Company">
+            <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">Sign in to your account</h2>
+            {% if messages %}
+                <p class="text-center text-red-500 mt-2 font-semibold">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </p>
+            {% endif %}
+        </div>
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+                <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+                    <div>
+                        <label for="username" class="block text-sm font-medium leading-6 text-gray-900">Username</label>
+                        <div class="mt-2">
+                            <input id="username" name="username" type="text" required
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium leading-6 text-gray-900 mt-2" >Password</label>
+                        <div class="mt-2">
+                            <input id="password" name="password" type="password" autocomplete="current-password"
+                                required
+                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-4">
+                        <div class="flex items-center ">
+                            <input id="remember-me" name="remember-me" type="checkbox"
+                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600">
+                            <label for="remember-me" class="ml-3 block text-sm leading-6 text-gray-900">Remember
+                                me</label>
+                        </div>
+                        <div class="text-sm leading-6">
+                            <a href="#" class="font-semibold text-[#5588fb] hover:text-[#5588fb]/80">Forgot password?</a>
+                        </div>
+                    </div>
+                    <div>
+                        <button type="submit"
+                            class="flex w-full justify-center rounded-md bg-[#5588fb] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#5588fb]/80 focus-visible:outline mt-4">Sign
+                            in</button>
+                    </div>
+                </div>
+            </div>
+            
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

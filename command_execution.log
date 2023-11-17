@@ -1,0 +1,17 @@
+DEBUG:root:Erro ao executar o comando: Game course`id
+Saída do erro: /bin/sh: 1: Syntax error: EOF in backquote substitution
+
+WARNING:django.request:Not Found: /favicon.ico
+DEBUG:root:Erro ao executar o comando: Game course`id
+Saída do erro: /bin/sh: 1: Syntax error: EOF in backquote substitution
+
+DEBUG:root:Erro ao executar o comando: Game course`id
+Saída do erro: /bin/sh: 1: Syntax error: EOF in backquote substitution
+
+DEBUG:root:Erro ao executar o comando: Game cours
+Saída do erro: /bin/sh: 1: Game: not found
+
+DEBUG:root:Erro ao executar o comando: Curso JS`id
+Saída do erro: /bin/sh: 1: Syntax error: EOF in backquote substitution
+
+INFO:django.utils.autoreload:/home/root123/proj/ssrf/curso/models.py changed, reloading.
