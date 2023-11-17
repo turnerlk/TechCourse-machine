@@ -36,7 +36,7 @@ def logout_view(request):
     return redirect('login')
 
 
-@login_required
+@login_required(login_url='login')
 def change_the_password_view(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
