@@ -39,19 +39,17 @@ Quando acessamos a aplicação em 127.0.0.1, observamos que a página inicial co
 
 Então, iniciamos nossa exploração, clicamos em "Log In" e somos redirecionados para a tela de login da aplicação.
 
-![Untitled](https://github.com/turnerlk/TechCourse-machine/assets/84579382/27e0174f-360b-4ba2-b459-1f0436aa0708)
+![Untitled](https://github.com/turnerlk/TechCourse-machine/assets/84579382/00d034bc-f986-4663-8484-dc621023ce70)
 
-![Untitled 1](https://github.com/turnerlk/TechCourse-machine/assets/84579382/32e33257-9767-482e-80e6-10c6a3745831)
+![Untitled 1](https://github.com/turnerlk/TechCourse-machine/assets/84579382/901acab3-1fd0-48bb-868f-7f96569c3cb5)
 
-![Untitled 2](https://github.com/turnerlk/TechCourse-machine/assets/84579382/a42d2f4b-2afc-4f45-87b6-7b4f77879ef4)
-
-![Untitled 3](https://github.com/turnerlk/TechCourse-machine/assets/84579382/54e3f986-8e68-4dbe-9066-568af9d62d95)
+![Untitled 2](https://github.com/turnerlk/TechCourse-machine/assets/84579382/62014735-c600-4bbc-8bae-95ecfcf58f1c)
 
 Após a tentativa malsucedida de utilizar credenciais padrão, decidimos realizar uma varredura de diretórios visando identificar possíveis rotas ou arquivos que pudessem conter informações sensíveis ou apresentar vulnerabilidades.
 
 Com a ferramenta WFUZZ, realizamos o fuzzing de diretórios e encontramos as seguintes rotas:
 
-![Untitled 4](https://github.com/turnerlk/TechCourse-machine/assets/84579382/db6f7a89-ef08-4944-8440-a538b025d8bf)
+![Untitled 3](https://github.com/turnerlk/TechCourse-machine/assets/84579382/4883b14d-f0e5-4b8a-8a36-25a6f0d67c24)
 
 ```jsx
 wfuzz -z file,big.txt --hc 404 http://127.0.0.1/FUZZ/
@@ -63,7 +61,7 @@ Tentamos acessar a rota e fomos direcionados para a rota "login". Então, abrimo
 
 Ao analisar o acesso à rota com a ferramenta Burp, notamos que o HTML da página do curso foi retornado com sucesso. Além disso, foi possível visualizar o conteúdo de um curso específico diretamente da rota explorada.
   
-![Untitled 5](https://github.com/turnerlk/TechCourse-machine/assets/84579382/3f2f0b78-5f54-4a5d-9ad4-d597976c6a9a)
+![Untitled 4](https://github.com/turnerlk/TechCourse-machine/assets/84579382/37398cde-193b-4482-b8af-3b6a35d18d8b)
 
 Primeira vulnerabilidade encontrada!
 
@@ -75,7 +73,7 @@ Analisando o HTML, podemos observar que existe um campo de pesquisa na página. 
 /course/?q=python
 ```
 
-![Untitled 6](https://github.com/turnerlk/TechCourse-machine/assets/84579382/776ebae3-655c-462e-8e90-1a57c3a8ca14)
+![Untitled 5](https://github.com/turnerlk/TechCourse-machine/assets/84579382/dbc84089-3fd3-45e4-a631-c8f340837a19)
  
 
 Utilizamos uma payload de SQLI neste campo e observamos que todos os cursos foram retornados sem nenhum erro.
@@ -84,13 +82,13 @@ Utilizamos uma payload de SQLI neste campo e observamos que todos os cursos fora
 /course/?q=a'or+1+%3d+1+--+-
 ```
 
-![Untitled 7](https://github.com/turnerlk/TechCourse-machine/assets/84579382/f304c32f-d8c7-4ac1-b4d8-dd9550ec7b5b)
+![Untitled 6](https://github.com/turnerlk/TechCourse-machine/assets/84579382/5571b802-6ea5-477c-9aa6-94399cbf1369)
 
 Após alguns testes de SQLI, conseguimos pegar o número de colunas que existe no banco de dados, nesse caso existem 4 colunas.
 
-![Untitled 8](https://github.com/turnerlk/TechCourse-machine/assets/84579382/eaeb5687-45d4-4ef2-a4a3-b0583b1811cf)
+![Untitled 7](https://github.com/turnerlk/TechCourse-machine/assets/84579382/41bd85aa-e687-4dfb-bd38-3ce33bbe80ec)
 
-![Untitled 9](https://github.com/turnerlk/TechCourse-machine/assets/84579382/7cb50bcc-c1ea-4a45-ba93-9b34a72ed911)
+![Untitled 8](https://github.com/turnerlk/TechCourse-machine/assets/84579382/9fcc34f0-9c66-4fd3-bfc6-f5a4dc1f5d4a)
 
 Conseguimos encontrar a segunda vulnerabilidade.
 
@@ -112,19 +110,19 @@ Testando algumas payloads e conseguimos trazer algumas tabelas do branco de dado
 a'union SELECT 1,sql,3,4 FROM sqlite_master WHERE type!='meta' AND sql NOT NULL AND name NOT LIKE 'sqlite_%' AND name ='auth_user' -- -
 ```
 
-![Untitled 10](https://github.com/turnerlk/TechCourse-machine/assets/84579382/cca7549c-4d1a-42cb-aa98-37b1d4136737)
+![Untitled 9](https://github.com/turnerlk/TechCourse-machine/assets/84579382/7bdb7288-e1e4-486f-b53a-35844ec5d8e3)
 
 ```jsx
 a'union+SELECT+1,tbl_name,3,4+FROM+sqlite_master+where+type%3d'table'+and+tbl_name+NOT+like+'sqlite_%25''+--+-
 ```
 
-![Untitled 11](https://github.com/turnerlk/TechCourse-machine/assets/84579382/713839f1-37cb-4fa9-a3ed-6a8ca3f3c958)
+![Untitled 10](https://github.com/turnerlk/TechCourse-machine/assets/84579382/eeb39bc2-e09a-411c-b16e-54cd355bdaa8)
 
 ```jsx
 a' union SELECT 1,GROUP_CONCAT(name),3,4 AS column_names FROM pragma_table_info('auth_user'); -- -
 ```
 
-![Untitled 12](https://github.com/turnerlk/TechCourse-machine/assets/84579382/9d5f2b0e-b252-4b14-af1b-aeae3ca64321)
+![Untitled 11](https://github.com/turnerlk/TechCourse-machine/assets/84579382/aab4d6b4-71cd-43d4-8768-40ac4cba0d2c)
 
 Como podemos analisar acima, a nossa payload retornou os nomes das tabelas e as colunas de cada tabela, então vamos ler a coluna username e  password, da tabela  auth_user.
 
@@ -132,13 +130,13 @@ Como podemos analisar acima, a nossa payload retornou os nomes das tabelas e as 
 a' union select 1,password,username,4 from auth_user -- -
 ```
 
-![Untitled 13](https://github.com/turnerlk/TechCourse-machine/assets/84579382/40711759-0c52-4eaa-b1dd-bcf38449ac41)
+![Untitled 12](https://github.com/turnerlk/TechCourse-machine/assets/84579382/246f39fd-dc49-4ec4-853d-d43185afe575)
 
 Como podemos notar, conseguimos obter acesso às informações do usuário administrador, incluindo o seu nome de usuário e a hash da senha.
 
 Copiamos a hash do usuário admin e, em seguida, no nosso terminal (no meu caso, estou usando um Kali Linux), criamos um arquivo e colamos a hash dentro desse arquivo.
 
-![Untitled 14](https://github.com/turnerlk/TechCourse-machine/assets/84579382/b94a9b60-d83b-4227-9ca3-af02e649308b)
+![Untitled 13](https://github.com/turnerlk/TechCourse-machine/assets/84579382/1a49721a-dba4-479b-a0bf-64e4eda7ccb1)
 
 Utilizando a ferramenta Hashcat, uma aplicação projetada para realizar quebra de senhas, empregamos a mesma para identificar o tipo específico da hash.
 
@@ -148,7 +146,7 @@ Utilizando a ferramenta Hashcat, uma aplicação projetada para realizar quebra 
 hashcat --identify hash
 ```
 
-![Untitled 15](https://github.com/turnerlk/TechCourse-machine/assets/84579382/96b8c9a5-d1c6-4cd5-9479-7c007b14694b)
+![Untitled 14](https://github.com/turnerlk/TechCourse-machine/assets/84579382/f12d2232-24f4-46de-8471-dc54e17d203f)
 
 Com o comando que vamos disponibilizar abaixo, podemos tentar quebrar a hash do usuário admn e trazer a senha tem texto claro.
 
@@ -156,13 +154,13 @@ Com o comando que vamos disponibilizar abaixo, podemos tentar quebrar a hash do 
 sudo hashcat -a0 -m 10000 senha /usr/share/wordlists/rockyou.txt
 ```
 
-![Untitled 16](https://github.com/turnerlk/TechCourse-machine/assets/84579382/7d14b316-fcbd-4380-8f2a-3d59e4c07bb2)
+![Untitled 15](https://github.com/turnerlk/TechCourse-machine/assets/84579382/6e970464-e515-427e-80c9-22fc90086c56)
 
 Como podemos perceber, conseguimos capturar a senha do administrador. Agora, procederemos com o acesso à aplicação.
 
 Neste ponto, destacamos a importância de utilizar senhas complexas. Caso o administrador tivesse adotado uma senha mais robusta, a quebra da mesma seria consideravelmente mais desafiadora.
 
-![Untitled 17](https://github.com/turnerlk/TechCourse-machine/assets/84579382/0b5d7ad0-998f-4f82-8ff3-6e8936558c89)
+![Untitled 16](https://github.com/turnerlk/TechCourse-machine/assets/84579382/d20c4544-6a3c-4fae-ac3d-8908bfcb8b3e)
 
 Quando acessamos a rota /monitor_logs/, podemos observar que se trata de um painel onde o administrador utiliza comandos para bloquear alunos, realizar reload, entre outras ações. O painel exibe alguns comandos que podem ser utilizados.
 
@@ -170,13 +168,15 @@ Ao testar alguns desses comandos, conseguimos identificar nossa terceira vulnera
 
 Command injection: é **um ataque cibernético que envolve a execução de comandos arbitrários em um sistema operacional (SO) host** . Normalmente, o agente da ameaça injeta os comandos explorando uma vulnerabilidade do aplicativo, como validação de entrada insuficiente.
 
-![Untitled 18](https://github.com/turnerlk/TechCourse-machine/assets/84579382/42d99895-82ae-4d7d-8a77-18a4fe00fa2a)
+![Untitled 17](https://github.com/turnerlk/TechCourse-machine/assets/84579382/3126cbdd-db8b-4279-b735-6aee2c170529)
 
 Feito isso agora é só explorar.
 
 Com essa vulnerabilidade é possível um RCE (remote command execution).
 
-![Untitled 19](https://github.com/turnerlk/TechCourse-machine/assets/84579382/2742842b-90f1-4088-a2c5-b652979c3d76)
+![Untitled 18](https://github.com/turnerlk/TechCourse-machine/assets/84579382/64421384-8451-4de8-9256-d69bb16ab274)
+
+![Untitled 19](https://github.com/turnerlk/TechCourse-machine/assets/84579382/7eb2c30b-77b1-4bc1-b61d-14f533a620a4)
 
 E assim concluímos nossa jornada! Este laboratório proporcionou a aprendizagem de três vulnerabilidades presentes em aplicações que podem ser encontradas mundo real.
 
