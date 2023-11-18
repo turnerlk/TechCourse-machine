@@ -39,6 +39,8 @@ Quando acessamos a aplicação em 127.0.0.1, observamos que a página inicial co
 
 Então, iniciamos nossa exploração, clicamos em "Log In" e somos redirecionados para a tela de login da aplicação.
 
+![Untitled](https://github.com/turnerlk/TechCourse-machine/assets/84579382/27e0174f-360b-4ba2-b459-1f0436aa0708)
+
 ![Untitled 1](https://github.com/turnerlk/TechCourse-machine/assets/84579382/32e33257-9767-482e-80e6-10c6a3745831)
 
 ![Untitled 2](https://github.com/turnerlk/TechCourse-machine/assets/84579382/a42d2f4b-2afc-4f45-87b6-7b4f77879ef4)
@@ -175,8 +177,6 @@ Feito isso agora é só explorar.
 Com essa vulnerabilidade é possível um RCE (remote command execution).
 
 ![Untitled 19](https://github.com/turnerlk/TechCourse-machine/assets/84579382/2742842b-90f1-4088-a2c5-b652979c3d76)
-
-![Untitled](https://github.com/turnerlk/TechCourse-machine/assets/84579382/27e0174f-360b-4ba2-b459-1f0436aa0708)
 
 E assim concluímos nossa jornada! Este laboratório proporcionou a aprendizagem de três vulnerabilidades presentes em aplicações que podem ser encontradas mundo real.
 
