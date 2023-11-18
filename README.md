@@ -39,17 +39,17 @@ Quando acessamos a aplicação em 127.0.0.1, observamos que a página inicial co
 
 Então, iniciamos nossa exploração, clicamos em "Log In" e somos redirecionados para a tela de login da aplicação.
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled.png)
+![Untitled 1](https://github.com/turnerlk/TechCourse-machine/assets/84579382/32e33257-9767-482e-80e6-10c6a3745831)
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%201.png)
+![Untitled 2](https://github.com/turnerlk/TechCourse-machine/assets/84579382/a42d2f4b-2afc-4f45-87b6-7b4f77879ef4)
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%202.png)
+![Untitled 3](https://github.com/turnerlk/TechCourse-machine/assets/84579382/54e3f986-8e68-4dbe-9066-568af9d62d95)
 
 Após a tentativa malsucedida de utilizar credenciais padrão, decidimos realizar uma varredura de diretórios visando identificar possíveis rotas ou arquivos que pudessem conter informações sensíveis ou apresentar vulnerabilidades.
 
 Com a ferramenta WFUZZ, realizamos o fuzzing de diretórios e encontramos as seguintes rotas:
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%203.png)
+![Untitled 4](https://github.com/turnerlk/TechCourse-machine/assets/84579382/db6f7a89-ef08-4944-8440-a538b025d8bf)
 
 ```jsx
 wfuzz -z file,big.txt --hc 404 http://127.0.0.1/FUZZ/
@@ -60,10 +60,8 @@ Podemos observar que a rota "course" retornou o código 200 e o valor de "chars"
 Tentamos acessar a rota e fomos direcionados para a rota "login". Então, abrimos o Burp Suite e interceptamos a requisição para "/course/".
 
 Ao analisar o acesso à rota com a ferramenta Burp, notamos que o HTML da página do curso foi retornado com sucesso. Além disso, foi possível visualizar o conteúdo de um curso específico diretamente da rota explorada.
-
   
-
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%204.png)
+![Untitled 5](https://github.com/turnerlk/TechCourse-machine/assets/84579382/3f2f0b78-5f54-4a5d-9ad4-d597976c6a9a)
 
 Primeira vulnerabilidade encontrada!
 
@@ -75,8 +73,7 @@ Analisando o HTML, podemos observar que existe um campo de pesquisa na página. 
 /course/?q=python
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%205.png)
-
+![Untitled 6](https://github.com/turnerlk/TechCourse-machine/assets/84579382/776ebae3-655c-462e-8e90-1a57c3a8ca14)
  
 
 Utilizamos uma payload de SQLI neste campo e observamos que todos os cursos foram retornados sem nenhum erro.
@@ -85,13 +82,13 @@ Utilizamos uma payload de SQLI neste campo e observamos que todos os cursos fora
 /course/?q=a'or+1+%3d+1+--+-
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%206.png)
+![Untitled 7](https://github.com/turnerlk/TechCourse-machine/assets/84579382/f304c32f-d8c7-4ac1-b4d8-dd9550ec7b5b)
 
 Após alguns testes de SQLI, conseguimos pegar o número de colunas que existe no banco de dados, nesse caso existem 4 colunas.
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%207.png)
+![Untitled 8](https://github.com/turnerlk/TechCourse-machine/assets/84579382/eaeb5687-45d4-4ef2-a4a3-b0583b1811cf)
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%208.png)
+![Untitled 9](https://github.com/turnerlk/TechCourse-machine/assets/84579382/7cb50bcc-c1ea-4a45-ba93-9b34a72ed911)
 
 Conseguimos encontrar a segunda vulnerabilidade.
 
@@ -113,19 +110,19 @@ Testando algumas payloads e conseguimos trazer algumas tabelas do branco de dado
 a'union SELECT 1,sql,3,4 FROM sqlite_master WHERE type!='meta' AND sql NOT NULL AND name NOT LIKE 'sqlite_%' AND name ='auth_user' -- -
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%209.png)
+![Untitled 10](https://github.com/turnerlk/TechCourse-machine/assets/84579382/cca7549c-4d1a-42cb-aa98-37b1d4136737)
 
 ```jsx
 a'union+SELECT+1,tbl_name,3,4+FROM+sqlite_master+where+type%3d'table'+and+tbl_name+NOT+like+'sqlite_%25''+--+-
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2010.png)
+![Untitled 11](https://github.com/turnerlk/TechCourse-machine/assets/84579382/713839f1-37cb-4fa9-a3ed-6a8ca3f3c958)
 
 ```jsx
 a' union SELECT 1,GROUP_CONCAT(name),3,4 AS column_names FROM pragma_table_info('auth_user'); -- -
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2011.png)
+![Untitled 12](https://github.com/turnerlk/TechCourse-machine/assets/84579382/9d5f2b0e-b252-4b14-af1b-aeae3ca64321)
 
 Como podemos analisar acima, a nossa payload retornou os nomes das tabelas e as colunas de cada tabela, então vamos ler a coluna username e  password, da tabela  auth_user.
 
@@ -133,13 +130,13 @@ Como podemos analisar acima, a nossa payload retornou os nomes das tabelas e as 
 a' union select 1,password,username,4 from auth_user -- -
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2012.png)
+![Untitled 13](https://github.com/turnerlk/TechCourse-machine/assets/84579382/40711759-0c52-4eaa-b1dd-bcf38449ac41)
 
 Como podemos notar, conseguimos obter acesso às informações do usuário administrador, incluindo o seu nome de usuário e a hash da senha.
 
 Copiamos a hash do usuário admin e, em seguida, no nosso terminal (no meu caso, estou usando um Kali Linux), criamos um arquivo e colamos a hash dentro desse arquivo.
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2013.png)
+![Untitled 14](https://github.com/turnerlk/TechCourse-machine/assets/84579382/b94a9b60-d83b-4227-9ca3-af02e649308b)
 
 Utilizando a ferramenta Hashcat, uma aplicação projetada para realizar quebra de senhas, empregamos a mesma para identificar o tipo específico da hash.
 
@@ -149,7 +146,7 @@ Utilizando a ferramenta Hashcat, uma aplicação projetada para realizar quebra 
 hashcat --identify hash
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2014.png)
+![Untitled 15](https://github.com/turnerlk/TechCourse-machine/assets/84579382/96b8c9a5-d1c6-4cd5-9479-7c007b14694b)
 
 Com o comando que vamos disponibilizar abaixo, podemos tentar quebrar a hash do usuário admn e trazer a senha tem texto claro.
 
@@ -157,13 +154,13 @@ Com o comando que vamos disponibilizar abaixo, podemos tentar quebrar a hash do 
 sudo hashcat -a0 -m 10000 senha /usr/share/wordlists/rockyou.txt
 ```
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2015.png)
+![Untitled 16](https://github.com/turnerlk/TechCourse-machine/assets/84579382/7d14b316-fcbd-4380-8f2a-3d59e4c07bb2)
 
 Como podemos perceber, conseguimos capturar a senha do administrador. Agora, procederemos com o acesso à aplicação.
 
 Neste ponto, destacamos a importância de utilizar senhas complexas. Caso o administrador tivesse adotado uma senha mais robusta, a quebra da mesma seria consideravelmente mais desafiadora.
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2016.png)
+![Untitled 17](https://github.com/turnerlk/TechCourse-machine/assets/84579382/0b5d7ad0-998f-4f82-8ff3-6e8936558c89)
 
 Quando acessamos a rota /monitor_logs/, podemos observar que se trata de um painel onde o administrador utiliza comandos para bloquear alunos, realizar reload, entre outras ações. O painel exibe alguns comandos que podem ser utilizados.
 
@@ -171,15 +168,15 @@ Ao testar alguns desses comandos, conseguimos identificar nossa terceira vulnera
 
 Command injection: é **um ataque cibernético que envolve a execução de comandos arbitrários em um sistema operacional (SO) host** . Normalmente, o agente da ameaça injeta os comandos explorando uma vulnerabilidade do aplicativo, como validação de entrada insuficiente.
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2017.png)
+![Untitled 18](https://github.com/turnerlk/TechCourse-machine/assets/84579382/42d99895-82ae-4d7d-8a77-18a4fe00fa2a)
 
 Feito isso agora é só explorar.
 
 Com essa vulnerabilidade é possível um RCE (remote command execution).
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2018.png)
+![Untitled 19](https://github.com/turnerlk/TechCourse-machine/assets/84579382/2742842b-90f1-4088-a2c5-b652979c3d76)
 
-![Untitled](JWT%20COURSE%20a2a0c08bb0a64e9395505e4795de5f87/Untitled%2019.png)
+![Untitled](https://github.com/turnerlk/TechCourse-machine/assets/84579382/27e0174f-360b-4ba2-b459-1f0436aa0708)
 
 E assim concluímos nossa jornada! Este laboratório proporcionou a aprendizagem de três vulnerabilidades presentes em aplicações que podem ser encontradas mundo real.
 
